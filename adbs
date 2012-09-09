@@ -1,0 +1,76 @@
+#!/bin/bash
+#################################################################################
+#
+#                       adbs - adb with serial number
+#
+#          Copyright (c) 2012 Soichiro Kashima. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+#################################################################################
+
+which adb > /dev/null 2>&1
+if [ "$?" != "0" ]; then
+  echo "'adb' command was not found."
+  echo "The 'adbs' tool uses adb(Android Debug Bridge)."
+  echo "Please install the Android SDK and add"
+  echo "the directory which has adb command to"
+  echo "the environment variable 'PATH'."
+  exit 1
+fi
+
+if [ $# -eq 0 ]; then
+  echo "Usage: adbs [-s SERIAL] ADB_COMMAND"
+  echo "  SERIAL      - 1st character of the serial number."
+  echo "  ADB_COMMAND - command string to pass to the device."
+  exit 1
+fi
+
+while getopts s: OPT
+do
+  case $OPT in
+    "s" ) number="$OPTARG"; shift; shift ;;
+  esac
+done
+
+if [ "$number" = "" ]; then
+  echo "List of devices attached"
+  for i in $(adb devices | grep -v "List of devices attached" | egrep -v "^$" | cut -f 1); do
+    echo [${i:0:1}] $i
+  done
+  echo -n "1st character of the serial number you want to use: "
+  read number
+fi
+
+if [ "$number" = "" ]; then
+  exit 1
+fi
+
+for i in $(adb devices | grep -v "List of devices attached" | egrep -v "^$" | cut -f 1); do
+  if [[ $i =~ ^$number.* ]]; then
+    serial=$i
+  fi
+done
+
+if [ "$serial" = "" ]; then
+  exit 1
+fi
+
+adb -s $serial $*
+
