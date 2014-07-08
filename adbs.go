@@ -50,7 +50,7 @@ the environment variable 'PATH'.
 	serial := flag.String("s", "", "Serial number(forward match)")
 	needHelp := flag.Bool("h", false, "Show this message")
 	flag.Parse()
-	if *serial == "" || *needHelp {
+	if *needHelp {
 		fmt.Printf(`Usage: adbs [[OPTIONS] ADB_COMMAND|-h]
   -h            - Show this help
   OPTIONS:
@@ -62,39 +62,102 @@ the environment variable 'PATH'.
 		os.Exit(1)
 	}
 
-	// Find specified device
-	c := exec.Command("adb", "devices")
-	stdout, err := c.StdoutPipe()
-	if err != nil {
-		fmt.Println("Failed to check devices")
-	}
-	c.Start()
-	r := bufio.NewReader(stdout)
 	var matched string
-	err = nil
-	for err == nil {
-		var line []byte
-		line, _, err = r.ReadLine()
-		sline := string(line)
-		if strings.HasPrefix(sline, "List of devices attached") {
-			continue
+
+	// Get device serial from input
+	if *serial == "" {
+		c := exec.Command("adb", "devices")
+		stdout, err := c.StdoutPipe()
+		if err != nil {
+			fmt.Println("Failed to check devices")
 		}
-		if sline == "" {
-			continue
+		c.Start()
+		r := bufio.NewReader(stdout)
+		candidates := []string{}
+		err = nil
+		for i := 1; err == nil; {
+			var line []byte
+			line, _, err = r.ReadLine()
+			sline := string(line)
+			if strings.HasPrefix(sline, "List of devices attached") {
+				continue
+			}
+			if sline == "" {
+				continue
+			}
+			candidateSerial := regexp.MustCompile("^[0-9a-zA-Z]+").FindString(sline)
+			candidates = append(candidates, candidateSerial)
+			i++
 		}
-		regex := regexp.MustCompile("^" + *serial + "[0-9a-zA-Z]*")
-		matched = regex.FindString(sline)
+		if len(candidates) == 0 {
+			fmt.Println("No device attached")
+			os.Exit(1)
+		} else if len(candidates) == 1 {
+			// This is the only device attached
+			matched = candidates[0]
+		} else {
+			for i := range candidates {
+				fmt.Printf("[%d] %s\n", i+1, candidates[i])
+			}
+			var input int
+			fmt.Printf("Device to execute command: ")
+			fmt.Scanf("%d", &input)
+			if 1 <= input && input <= len(candidates) {
+				matched = candidates[input-1]
+				fmt.Printf("Specified: %s\n", matched)
+			} else {
+				fmt.Printf("Invalid number: %d\n", input)
+				os.Exit(1)
+			}
+		}
 		if matched == "" {
-			fmt.Println("Specified device not found\n")
+			fmt.Println("Serial not specified")
 			os.Exit(1)
 		}
+	} else {
+		// Find specified device
+		c := exec.Command("adb", "devices")
+		stdout, err := c.StdoutPipe()
+		if err != nil {
+			fmt.Println("Failed to check devices")
+		}
+		c.Start()
+		r := bufio.NewReader(stdout)
+		err = nil
+		candidates := []string{}
+		for err == nil {
+			var line []byte
+			line, _, err = r.ReadLine()
+			sline := string(line)
+			if strings.HasPrefix(sline, "List of devices attached") {
+				continue
+			}
+			if sline == "" {
+				continue
+			}
+			regex := regexp.MustCompile("^" + *serial + "[0-9a-zA-Z]*")
+			candidateMatched := regex.FindString(sline)
+			if candidateMatched != "" {
+				candidates = append(candidates, candidateMatched)
+			}
+		}
+		if len(candidates) == 0 {
+			fmt.Println("Specified device not found\n")
+			os.Exit(1)
+		} else if 1 < len(candidates) {
+			fmt.Println("Multiple candidate devices found:")
+			for i := range candidates {
+				fmt.Printf("[%d] %s\n", i+1, candidates[i])
+			}
+			os.Exit(1)
+		}
+		matched = candidates[0]
 		fmt.Printf("adbs: serial: %s\n", matched)
-		break
 	}
 
 	// Give adb command to device
 	args := retrieveRestArgs()
-	c = exec.Command("adb", "-s", matched, args)
+	c := exec.Command("adb", "-s", matched, args)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin
