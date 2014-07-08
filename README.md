@@ -1,6 +1,8 @@
 ADBS
 ==============================================
 
+[![Build Status](https://drone.io/github.com/ksoichiro/adbs/status.png)](https://drone.io/github.com/ksoichiro/adbs/latest)
+
 ## Introduction ##
 
 The adbs is a simple tool for adb(Android Debug Bridge).
