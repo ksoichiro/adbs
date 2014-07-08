@@ -46,13 +46,16 @@ the environment variable 'PATH'.
 	}
 
 	serial := flag.String("s", "", "Serial number(forward match)")
+	needHelp := flag.Bool("h", false, "Show this message")
 	flag.Parse()
-	if *serial == "" {
-		fmt.Printf(`Usage: adbs [-s SERIAL] ADB_COMMAND
-  SERIAL      - Serial number of target device.
-                You don't need to input complete serial number.
-                Just part of it is okay. (forward match)
-  ADB_COMMAND - command string to pass to the device.
+	if *serial == "" || *needHelp {
+		fmt.Printf(`Usage: adbs [[OPTIONS] ADB_COMMAND|-h]
+  -h            - Show this help
+  OPTIONS:
+    -s SERIAL   - Serial number of target device.
+                  You don't need to input complete serial number.
+                  Just part of it is okay. (forward match)
+  ADB_COMMAND   - command string to pass to the device.
 `)
 		os.Exit(1)
 	}
