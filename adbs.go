@@ -35,6 +35,7 @@ import (
 )
 
 func main() {
+	// Check adb's availability
 	if !hasAdb() {
 		fmt.Printf(`'adb' command not found.
 The 'adbs' tool uses adb(Android Debug Bridge).
@@ -45,6 +46,7 @@ the environment variable 'PATH'.
 		os.Exit(1)
 	}
 
+	// Get args and show usage
 	serial := flag.String("s", "", "Serial number(forward match)")
 	needHelp := flag.Bool("h", false, "Show this message")
 	flag.Parse()
@@ -60,6 +62,7 @@ the environment variable 'PATH'.
 		os.Exit(1)
 	}
 
+	// Find specified device
 	c := exec.Command("adb", "devices")
 	stdout, err := c.StdoutPipe()
 	if err != nil {
@@ -89,6 +92,7 @@ the environment variable 'PATH'.
 		break
 	}
 
+	// Give adb command to device
 	args := retrieveRestArgs()
 	c = exec.Command("adb", "-s", matched, args)
 	c.Stdout = os.Stdout
