@@ -5,9 +5,11 @@
 `adbs` is a simple tool for adb(Android Debug Bridge).  
 Makes it easy to select one of the multiple attached devices when using `adb`.
 
+[Japanese document](README.ja.md)
+
 ## Install
 
-[Get the latest binary](https://github.com/ksoichiro/adbs/releases/latest) or install by go:
+[Get the latest binary](https://github.com/ksoichiro/adbs/releases/latest) and locate it to somewhere in your `PATH` or install by go:
 
 ```sh
 go get github.com/ksoichiro/adbs
@@ -17,7 +19,7 @@ go get github.com/ksoichiro/adbs
 
 When you are attaching multiple devices to the PC/Mac
 for testing or debugging, you must specify serial number of the target device
-to use adb command.
+to use `adb` command.
 So you must use `adb devices` to look for the device's serial number at first,
 then copy it, and make the complete command with pasting the number...
 
@@ -25,7 +27,7 @@ then copy it, and make the complete command with pasting the number...
 You just specify the first character of the serial number, so you do not
 have to copy and paste the correct serial number.
 
-For example, if the result of the adb devices is following:
+For example, if the result of the `adb devices` is following:
 
 ```sh
 $ adb devices
@@ -50,7 +52,7 @@ adbs: serial: 304D19E0D41F543F
 shell@android:/ $
 ```
 
-or you can execute without '-s' option. `adbs` will ask it to you.
+or you can execute without `-s` option. `adbs` will ask it to you.
 For example:
 
 ```sh

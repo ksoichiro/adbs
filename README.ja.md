@@ -1,41 +1,62 @@
-ADBS
-==============================================
+# adbs
 
-## 概要 ##
+[![Build Status](https://drone.io/github.com/ksoichiro/adbs/status.png)](https://drone.io/github.com/ksoichiro/adbs/latest)
 
-adbsは、adb(Android Debug Bridge)のためのシンプルなツールです。
+`adbs`は、adb(Android Debug Bridge)のためのシンプルなツールです。  
+接続されている複数端末から1つを選んで`adb`を実行するのが簡単になります。
 
-テストやデバッグの目的で複数の端末をPC/Macに接続しているとき、特定の端末に対してadbコマンドでの操作をする場合はシリアル番号を指定する必要があります。
-そのため、まず'adb devices'を実行して対象端末のシリアル番号を探し、コピー＆ペーストしてコマンドを作るという面倒な手順を踏むことになると思います。
+## インストール
 
-adbsは、この手順をシンプルにします。
-adbsではシリアル番号の最初の1文字を指定するだけで端末を特定して実行できるようになるので、正確なシリアル番号をコピー＆ペーストする必要がありません。
+[最新のバイナリをダウンロード](https://github.com/ksoichiro/adbs/releases/latest)してパスの通ったディレクトリに配置するか、以下のようにgoでインストールします。
 
-例えば、adb devicesの結果が以下のようなものだったとします。
+```sh
+go get github.com/ksoichiro/adbs
+```
 
-    $ adb devices
-    List of devices attached
-    304D19E0D41F543F  device
-    275501700028393   device
+## 概要
 
-この場合は以下のように実行できます。
+テストやデバッグの目的で複数の端末をPC/Macに接続しているとき、特定の端末に対して`adb`コマンドでの操作をする場合はシリアル番号を指定する必要があります。
+そのため、まず`adb devices`を実行して対象端末のシリアル番号を探し、コピー＆ペーストしてコマンドを作るという面倒な手順を踏むことになると思います。
 
-    $ adbs -s 3 shell
-    shell@android:/ $
+`adbs`は、この手順をシンプルにします。
+`adbs`ではシリアル番号の最初の1文字を指定するだけで端末を特定して実行できるようになるので、正確なシリアル番号をコピー＆ペーストする必要がありません。
 
-もしくは、'-s'オプションなしで実行すればadbsが聞いてきます。
+例えば、`adb devices`の結果が以下のようなものだったとします。
+
+```sh
+$ adb devices
+List of devices attached
+304D19E0D41F543F  device
+275501700028393   device
+```
+
+この状況では、以下のようなことが起きるはずです。
+
+```sh
+$ adb shell
+error: more than one device and emulator
+# しまった、シリアル番号を入力しないと実行できない...
+```
+
+`adbs`を使うとこの問題を回避できます。
+
+```sh
+$ adbs -s 3 shell
+adbs: serial: 304D19E0D41F543F
+shell@android:/ $
+```
+
+もしくは、'-s'オプションなしで実行すれば`adbs`が聞いてきます。  
 例えば以下のようになります。
 
-    $ adbs shell
-    List of devices attached
-    [3] 304D19E0D41F543F
-    [2] 275501700028393
-    1st character of the serial number you want to use: 2
-    shell@android:/ $
-
-## インストール ##
-
-'adbs'ファイルをパスの通ったディレクトリ(/usr/local/binなど)に置くだけです。
+```sh
+$ adbs shell
+[1] 304D19E0D41F543F
+[2] 275501700028393
+Device to execute command: 1
+Specified: 304D19E0D41F543F
+shell@android:/ $
+```
 
 ## License ##
 
