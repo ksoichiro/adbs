@@ -7,10 +7,23 @@
 
 ## インストール
 
-[最新のバイナリをダウンロード](https://github.com/ksoichiro/adbs/releases/latest)してパスの通ったディレクトリに配置するか、以下のようにgoでインストールします。
+以下のような方法でインストールできます。
+
+### バイナリ
+
+[最新のバイナリをダウンロード](https://github.com/ksoichiro/adbs/releases/latest)してパスの通ったディレクトリに配置します。
+
+### Go
 
 ```sh
-go get github.com/ksoichiro/adbs
+$ go get github.com/ksoichiro/adbs
+```
+
+### [Homebrew](http://brew.sh/)
+
+```sh
+$ brew tap ksoichiro/adbs
+$ brew install adbs
 ```
 
 ## 概要

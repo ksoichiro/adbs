@@ -9,10 +9,23 @@ Makes it easy to select one of the multiple attached devices when using `adb`.
 
 ## Install
 
-[Get the latest binary](https://github.com/ksoichiro/adbs/releases/latest) and locate it to somewhere in your `PATH` or install by go:
+There are several methods to install `adbs`.
+
+### Release binary
+
+[Get the latest binary](https://github.com/ksoichiro/adbs/releases/latest) and locate it to somewhere in your `PATH`.
+
+### Go
 
 ```sh
-go get github.com/ksoichiro/adbs
+$ go get github.com/ksoichiro/adbs
+```
+
+### [Homebrew](http://brew.sh/)
+
+```sh
+$ brew tap ksoichiro/adbs
+$ brew install adbs
 ```
 
 ## Introduction
