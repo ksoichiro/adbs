@@ -85,7 +85,7 @@ the environment variable 'PATH'.
 			if sline == "" {
 				continue
 			}
-			candidateSerial := regexp.MustCompile("^[0-9a-zA-Z]+").FindString(sline)
+			candidateSerial := regexp.MustCompile("^[0-9a-zA-Z\\.:]+").FindString(sline)
 			candidates = append(candidates, candidateSerial)
 			i++
 		}
@@ -135,7 +135,7 @@ the environment variable 'PATH'.
 			if sline == "" {
 				continue
 			}
-			regex := regexp.MustCompile("^" + *serial + "[0-9a-zA-Z]*")
+			regex := regexp.MustCompile("^" + *serial + "[0-9a-zA-Z\\.:]*")
 			candidateMatched := regex.FindString(sline)
 			if candidateMatched != "" {
 				candidates = append(candidates, candidateMatched)
