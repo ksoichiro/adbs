@@ -156,8 +156,7 @@ the environment variable 'PATH'.
 	}
 
 	// Give adb command to device
-	args := retrieveRestArgs()
-	c := exec.Command("adb", "-s", matched, args)
+	c := exec.Command("adb", append([]string{"-s", matched}, flag.Args()...)...)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin
@@ -167,13 +166,4 @@ the environment variable 'PATH'.
 func hasAdb() bool {
 	path, err := exec.LookPath("adb")
 	return path != "" && err == nil
-}
-
-func retrieveRestArgs() string {
-	arrayArgs := flag.Args()
-	allArgs := ""
-	for i := range arrayArgs {
-		allArgs = allArgs + arrayArgs[i]
-	}
-	return allArgs
 }
